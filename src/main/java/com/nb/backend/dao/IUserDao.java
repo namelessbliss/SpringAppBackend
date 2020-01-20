@@ -10,7 +10,7 @@ public interface IUserDao extends CrudRepository<User, Long> {
 
     public User findByEmailAndPassword(String email, String password);
 
-    @Query("select u from Users u where u.id=?1")
+    @Query("select u from User u where u.id=?1")
     public User findByIdSQL(Long id);
 
 }
