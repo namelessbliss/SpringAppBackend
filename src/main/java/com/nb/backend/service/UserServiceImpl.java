@@ -27,7 +27,7 @@ public class UserServiceImpl implements IUserService {
     @Override
     @Transactional(readOnly = true)
     public User findById(Long id) {
-        userDao.findByIdSQL(id);
+        return userDao.findByIdSQL(id);
     }
 
     @Override
