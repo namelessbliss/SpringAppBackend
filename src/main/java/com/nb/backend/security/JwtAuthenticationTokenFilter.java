@@ -24,7 +24,7 @@ public class JwtAuthenticationTokenFilter extends AbstractAuthenticationProcessi
             throws AuthenticationException, IOException, ServletException {
 
         String header = httpServletRequest.getHeader(Constants.AUTHORIZATION_HEADER);
-        if (header == null || header.startsWith(Constants.BEARER_TOKEN)) {
+        if (header == null || !header.startsWith(Constants.BEARER_TOKEN)) {
             throw new RuntimeException("JWT es incorrecto");
         }
 
