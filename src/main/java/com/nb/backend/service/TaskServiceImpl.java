@@ -3,10 +3,12 @@ package com.nb.backend.service;
 import com.nb.backend.dao.ITaskDao;
 import com.nb.backend.entity.Task;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Service
 public class TaskServiceImpl implements ITaskService {
 
     @Autowired
