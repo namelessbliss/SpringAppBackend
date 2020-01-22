@@ -30,4 +30,12 @@ public class TaskRestController {
         return new ResponseEntity<Void>(HttpStatus.CREATED);
     }
 
+    @PutMapping("/task")
+    public ResponseEntity<?> updateTask(@RequestBody Task task, @RequestHeader(name = "Authorization") String bearerToken) {
+        Task tastUpdate = taskService.findByIdSQL(task.getId());
+        tastUpdate.setStatus(task.getStatus());
+        taskService.saveTask(tastUpdate);
+        return new ResponseEntity<Void>(HttpStatus.OK);
+    }
+
 }
