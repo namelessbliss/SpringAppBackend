@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Objects;
 
 @RestController
+//solo dar acceso al dominio adecuado, para esta caso se da acceso a todos
+@CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.DELETE, RequestMethod.PUT, RequestMethod.POST})
 @RequestMapping("/api")
 public class TaskRestController {
 
