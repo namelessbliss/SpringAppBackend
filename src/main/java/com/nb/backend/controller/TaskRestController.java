@@ -7,13 +7,22 @@ import com.nb.backend.service.ITaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.xml.xpath.XPath;
+import java.io.IOException;
+import java.nio.file.*;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api")
 public class TaskRestController {
+
+    public static final String UPLOAD_DIRECTORY = System.getProperty("user.dir") + "/src/main/resources";
 
     @Autowired
     private ITaskService taskService;
@@ -57,6 +66,43 @@ public class TaskRestController {
 
         taskService.deleteTask(id);
         return new ResponseEntity<Void>(HttpStatus.OK);
+    }
+
+    @PostMapping("/task/upload")
+    public ResponseEntity<?> createTaskImage(@RequestParam("image") MultipartFile file,
+                                             @RequestParam("name") String name,
+                                             @RequestParam("description") String desc,
+                                             @RequestHeader(name = "Authorization") String bearerToken) {
+        Task task = new Task();
+        String token = bearerToken.substring(7);
+        JwtUser jwtUser = validator.validate(token);
+        task.setUserId(jwtUser.getId());
+        task.setStatus("to-do");
+        task.setName(name);
+        task.setDescription(desc);
+
+        //Guardar Imagen
+        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+        Path path = Paths.get(UPLOAD_DIRECTORY, fileName);
+
+        try {
+            Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        //Compone la direccion de url con el nombre del dominio
+        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/download/")
+                .path(fileName)
+                .toUriString();
+
+        task.setImageUrl(fileDownloadUri);
+
+        //guardar la task
+        taskService.saveTask(task);
+
+        return new ResponseEntity<Void>(HttpStatus.CREATED);
     }
 
 }
