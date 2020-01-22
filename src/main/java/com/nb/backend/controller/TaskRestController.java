@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api")
 public class TaskRestController {
@@ -36,6 +38,18 @@ public class TaskRestController {
         tastUpdate.setStatus(task.getStatus());
         taskService.saveTask(tastUpdate);
         return new ResponseEntity<Void>(HttpStatus.OK);
+    }
+
+    @GetMapping("/task/list")
+    public ResponseEntity<?> getTask(@RequestHeader(name = "Authorization") String bearerToken) {
+        String token = bearerToken.substring(7);
+        JwtUser jwtUser = validator.validate(token);
+        List<Task> taskList = taskService.getTaskUser(jwtUser.getId());
+        if (taskList != null && taskList.size() != 0) {
+            return new ResponseEntity<>(taskList, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
+        }
     }
 
 }
